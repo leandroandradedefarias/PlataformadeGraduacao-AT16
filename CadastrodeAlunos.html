@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Alunos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        button {
+            cursor: pointer;
+        }
+        @media (max-width: 600px) {
+            form, table {
+                width: 100%;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Cadastro de Alunos</h1>
+
+    <form id="formAluno">
+        <label for="codigo">Código do Aluno:</label><br>
+        <input type="text" id="codigo" required><br><br>
+
+        <label for="nome">Nome do Aluno:</label><br>
+        <input type="text" id="nome" required><br><br>
+
+        <label for="faixa">Faixa:</label><br>
+        <input type="text" id="faixa" required><br><br>
+
+        <label for="taxa">Taxa de Graduação:</label><br>
+        <input type="number" id="taxa" required><br><br>
+
+        <label for="desconto">Desconto:</label><br>
+        <input type="number" id="desconto" required><br><br>
+
+        <label for="motivo">Motivo do Desconto:</label><br>
+        <input type="text" id="motivo" required><br><br>
+
+        <label for="dataExame">Data do Exame:</label><br>
+        <input type="date" id="dataExame" required><br><br>
+
+        <label for="dataEntrega">Data de Entrega de Faixas:</label><br>
+        <input type="date" id="dataEntrega" required><br><br>
+
+        <button type="submit">Cadastrar Aluno</button>
+    </form>
+
+    <table id="tabelaAlunos">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Nome</th>
+                <th>Faixa</th>
+                <th>Taxa</th>
+                <th>Desconto</th>
+                <th>Motivo</th>
+                <th>Data Exame</th>
+                <th>Data Entrega</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <script>
+        const form = document.getElementById('formAluno');
+        const tabela = document.getElementById('tabelaAlunos').getElementsByTagName('tbody')[0];
+
+        // Função para carregar os dados salvos no localStorage
+        function carregarAlunos() {
+            const alunos = JSON.parse(localStorage.getItem('alunos')) || [];
+            alunos.forEach(adicionarAlunoNaTabela);
+        }
+
+        // Função para adicionar aluno na tabela
+        function adicionarAlunoNaTabela(aluno) {
+            const novaLinha = tabela.insertRow();
+
+            novaLinha.insertCell(0).textContent = aluno.codigo;
+            novaLinha.insertCell(1).textContent = aluno.nome;
+            novaLinha.insertCell(2).textContent = aluno.faixa;
+            novaLinha.insertCell(3).textContent = aluno.taxa;
+            novaLinha.insertCell(4).textContent = aluno.desconto;
+            novaLinha.insertCell(5).textContent = aluno.motivo;
+            novaLinha.insertCell(6).textContent = aluno.dataExame;
+            novaLinha.insertCell(7).textContent = aluno.dataEntrega;
+
+            const botaoExcluir = document.createElement('button');
+            botaoExcluir.textContent = 'Excluir';
+            botaoExcluir.onclick = () => {
+                tabela.deleteRow(novaLinha.rowIndex - 1);
+                excluirAluno(aluno.codigo);
+            };
+            novaLinha.insertCell(8).appendChild(botaoExcluir);
+        }
+
+        // Função para salvar aluno no localStorage
+        function salvarAluno(aluno) {
+            const alunos = JSON.parse(localStorage.getItem('alunos')) || [];
+            alunos.push(aluno);
+            localStorage.setItem('alunos', JSON.stringify(alunos));
+        }
+
+        // Função para excluir aluno do localStorage
+        function excluirAluno(codigo) {
+            let alunos = JSON.parse(localStorage.getItem('alunos')) || [];
+            alunos = alunos.filter(aluno => aluno.codigo !== codigo);
+            localStorage.setItem('alunos', JSON.stringify(alunos));
+        }
+
+        // Evento de submissão do formulário
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const aluno = {
+                codigo: document.getElementById('codigo').value,
+                nome: document.getElementById('nome').value,
+                faixa: document.getElementById('faixa').value,
+                taxa: document.getElementById('taxa').value,
+                desconto: document.getElementById('desconto').value,
+                motivo: document.getElementById('motivo').value,
+                dataExame: document.getElementById('dataExame').value,
+                dataEntrega: document.getElementById('dataEntrega').value,
+            };
+
+            adicionarAlunoNaTabela(aluno);
+            salvarAluno(aluno);
+
+            form.reset();
+        });
+
+        // Carregar os alunos ao carregar a página
+        carregarAlunos();
+    </script>
+
+</body>
+</html>
